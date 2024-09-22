@@ -1,215 +1,275 @@
-### **Lesson 3: Integrating the CORE API**
+### Lesson: Implementing a Research Paper Search Engine with React
 
-Now that we’ve built a simple search form and simulated search results, it’s time to integrate the **CORE API** to fetch real research paper data based on the user's input. This lesson will teach you how to make HTTP requests in React, handle asynchronous data, and display the results from a live API.
+In this lesson, we will walk through the process of creating a research paper search engine using React and the [CORE API](https://core.ac.uk). The project will allow users to search for academic papers by keywords, retrieve relevant results, and display details such as the paper title, abstract, and links to view or download the paper.
 
----
+By the end of this lesson, you will have a working application that can:
+1. Search for research papers using the CORE API.
+2. Display the search results in a user-friendly way.
+3. Handle loading states, errors, and pagination via API scroll.
 
-## **Step 1: Understanding the CORE API**
-
-Before we start coding, let’s understand what the CORE API does and how we’ll use it in our app.
-
-- **What is CORE API**: The CORE API provides access to a large repository of open-access research papers. We’ll use the API to search for papers based on user input and retrieve metadata such as title, authors, abstract, and links to full-text articles.
-
-- **Documentation**: You can explore the official documentation [here](https://core.ac.uk/services#api). We’ll be using the **articles search endpoint**, which allows us to search for research papers by keyword.
+We'll also discuss how to get an API key, the importance of limiting request rates to avoid overloading the API, and how to process and extract the API response data for display.
 
 ---
 
-### **Step 2: Get an API Key**
+### **1. Setting Up the Project**
 
-1. **Sign up for the CORE API**:
-   - Go to the [CORE API page](https://core.ac.uk/services#api) and sign up for a free API key.
-   - After signing up, you’ll receive an API key that will be used to authenticate requests to the API.
+Before diving into the code, ensure you have the following set up:
 
-2. **Save Your API Key**:
-   - Store your API key in a safe place, as you’ll need to use it in the app. In real-world projects, never hardcode your API keys directly in the code that is pushed to GitHub or deployed.
+- Node.js and npm installed.
+- A basic `React` project created using `create-react-app` or another setup method.
+
+You will need an API key from CORE to make requests to their API.
+
+### **2. Obtaining a CORE API Key**
+
+1. Visit the [CORE website](https://core.ac.uk) and sign up for an account if you don’t have one.
+2. Navigate to the API section and request an API key. This key will allow you to access the research papers through the CORE API.
+3. Once you have the API key, you’ll need to include it in your project to authenticate API requests. You can either store it in an environment variable (`.env` file) or directly in the code (not recommended for production).
+
+### **3. Limiting Request Rate to Avoid API Rate Limits**
+
+API providers often impose rate limits to prevent overloading their servers. The CORE API is no exception. To avoid exceeding the limit:
+- Use a delay between subsequent requests (e.g., 3 seconds).
+- Ensure you don't make unnecessary requests, especially in a loop or continuous scrolling context.
+- Handle "429 Too Many Requests" responses gracefully by retrying the request after a delay.
+
+### **4. Understanding the API Response Structure**
+
+The CORE API returns a JSON object with several fields, including the results of the query and a `scrollId` for pagination. To display the search results properly, you’ll need to extract key pieces of information such as:
+- The title of the paper.
+- The abstract or description.
+- Links to view and download the paper.
+
+### **5. Project Structure**
+
+Here is an overview of the project structure:
+
+```
+/src
+  /components
+    - Search.jsx
+  /util
+    - api.js
+  - App.js
+```
+
+### **6. Code Explanation**
+
+Now, let's dive into the code.
+
+#### **App.js**
+The `App.js` component serves as the root of the application and renders the `Search` component.
+
+```jsx
+// App.js
+import React from 'react';
+import Search from './components/Search';
+
+function App() {
+  return (
+    <div className="App">
+      <h1>Research Paper Search Engine</h1>
+      <Search />
+    </div>
+  );
+}
+
+export default App;
+```
+
+This file is straightforward. It contains the title of the page and renders the `Search` component.
+
+#### **Search.jsx**
+
+The `Search.jsx` component contains the search form and logic to handle fetching and displaying results.
+
+```jsx
+// Search.jsx
+import React, { useState } from 'react';
+import { scroll, extractInfo } from '../util/api.js';  // Import the utility functions
+
+function Search() {
+    const [query, setQuery] = useState(''); // State for user input
+    const [results, setResults] = useState([]); // State to store API results
+    const [loading, setLoading] = useState(false); // State for loading indicator
+    const [error, setError] = useState(null); // State for errors
+
+    const searchUrl = 'https://api.core.ac.uk/v3/search/works'; // CORE API endpoint
+
+    // Handle form submission and search
+    const handleSearch = async (e) => {
+        e.preventDefault(); // Prevent default form submission
+        setLoading(true); // Show loading spinner
+        setError(null); // Reset any previous errors
+        setResults([]); // Clear previous results
+
+        try {
+            // Fetch results from the API
+            const fetchedResults = await scroll(searchUrl, query);
+            const processedResults = extractInfo(fetchedResults);  // Extract relevant data from the results
+            setResults(processedResults);  // Set the results in state
+        } catch (err) {
+            setError(err.message);  // Set error message if API call fails
+        } finally {
+            setLoading(false);  // Hide loading spinner after request completes
+        }
+    };
+
+    return (
+        <div>
+            {/* Search form */}
+            <form onSubmit={handleSearch}>
+                <input
+                    type="text"
+                    placeholder="Search for works"
+                    value={query}
+                    onChange={(e) => setQuery(e.target.value)} // Update query state on input change
+                />
+                <button type="submit">Search</button>
+            </form>
+
+            {/* Display loading message */}
+            {loading && <p>Loading...</p>}
+
+            {/* Display error message */}
+            {error && <p>Error: {error}</p>}
+
+            {/* Display search results */}
+            <ul>
+                {results.map((result, index) => (
+                    <li key={index}>
+                        <h2>{result.title}</h2>
+                        <p>{result.description}</p>
+                        <div>
+                            <a href={result.displayLink} target="_blank" rel="noopener noreferrer">
+                                View Details
+                            </a>
+                            {' | '}
+                            <a href={result.downloadLink} target="_blank" rel="noopener noreferrer">
+                                Download
+                            </a>
+                        </div>
+                    </li>
+                ))}
+            </ul>
+        </div>
+    );
+}
+
+export default Search;
+```
+
+- **State Management**: The component uses React's `useState` to manage the search query, results, loading state, and error messages.
+- **API Request**: On form submission, the `scroll` function is called to fetch results from the API.
+- **Display Logic**: Results are displayed as a list with the title, description, and links to view or download the paper.
+
+#### **api.js**
+
+The `api.js` file contains the functions responsible for interacting with the CORE API.
+
+```javascript
+// api.js
+
+// Function to query the API, with optional scrollId for pagination
+export async function queryApi(searchUrl, query, scrollId = null) {
+    const headers = {
+        Authorization: `Bearer ${"B8Z........JNSw"}`,  // Replace with your API key
+    };
+
+    // Construct the URL for the API request
+    let url = scrollId
+      ? `${searchUrl}?q=${encodeURIComponent(query)}&limit=5&scrollId=${scrollId}`  // If scrolling, include scrollId
+      : `${searchUrl}?q=${encodeURIComponent(query)}&limit=5&scroll=true`;  // Initial request with scroll enabled
+
+    try {
+        const response = await fetch(url, { headers });
+
+        // Handle "Too Many Requests" error (rate limit)
+        if (response.status === 429) {
+            console.warn('Too many requests. Retrying after delay...');
+            await delay(3000);  // Wait 3 seconds before retrying
+            return queryApi(searchUrl, query, scrollId);  // Retry the request
+        }
+
+        if (!response.ok) {
+            throw new Error('Failed to fetch results');  // Handle general API errors
+        }
+
+        const data = await response.json();  // Parse the response data
+        return { data, elapsed: response.elapsed || 0 };  // Return data and response time
+    } catch (error) {
+        console.error('Error fetching data:', error);  // Log and return error
+        return { data: null, error: error.message };
+    }
+}
+
+// Helper function to add a delay between requests
+function delay(ms) {
+    return new Promise(resolve => setTimeout(resolve, ms));
+}
+
+// Function to handle pagination (scrolling through results)
+export async function scroll(searchUrl, query) {
+    let allResults = [];
+    let scrollId = null;  // Scroll ID for pagination
+
+    while (true) {
+        const { data, error } = await queryApi(searchUrl, query, scrollId);
+
+        if (error || !data || !data.results) {
+            console.error('Failed to retrieve data:', error);
+            break;
+        }
+
+        scrollId = data.scrollId;  // Update the scrollId for the next page of results
+        const results = data.results;
+        if (results.length === 0) break;  // Stop if no more results
+
+        allResults = [...allResults, ...results];  // Append new results
+        await delay(3000);  // Delay between requests to avoid rate limits
+    }
+
+    return allResults;  // Return all collected results
+}
+
+// Function to extract relevant information from API results
+export function extractInfo(results) {
+    if (!Array.isArray(results)) {
+        console.error('Expected an array of results');
+        return [];
+    }
+
+    // Map over the results to extract the necessary fields
+    return results.map((result) => {
+        const title = result.title || "No title available";
+        const description = result.abstract || "No description available";
+        const displayLink = result.links.find(link => link.type === 'display')?.url || "#";
+        const downloadLink = result.links.find(link => link.type === 'download')?.
+
+url || "#";
+
+        return {
+            title,
+            description,
+            displayLink,
+            downloadLink,
+        };
+    });
+}
+```
+
+- **`queryApi`**: Handles the main API request logic, including rate limiting and pagination.
+- **`scroll`**: Manages scrolling/pagination by repeatedly calling `queryApi` to fetch subsequent pages of results.
+- **`extractInfo`**: Extracts key information (title, description, links) from the API response for rendering in the UI.
 
 ---
 
-### **Step 3: Installing Axios**
+### **7. Summary**
 
-We’ll use **Axios** to make HTTP requests in our React app. While React has built-in tools for making requests (like `fetch`), **Axios** is often preferred because of its cleaner syntax and better error handling.
+In this lesson, we:
+- Learned how to obtain and use an API key for the CORE API.
+- Implemented a search functionality using React and the CORE API.
+- Discussed the importance of managing request rates to avoid hitting rate limits.
+- Extracted and displayed relevant information from the API response.
 
-#### **Why Axios?**
-- Axios simplifies HTTP requests.
-- It has automatic transformation of JSON data.
-- It supports request/response interceptors, making it more customizable than the native `fetch`.
-
-#### **Steps to Install Axios**:
-1. In your terminal, navigate to your project folder and run:
-   ```bash
-   npm install axios
-   ```
-   This will add Axios to your project dependencies.
-
-2. Import Axios in your `SearchForm` component:
-   ```javascript
-   import axios from 'axios';
-   ```
-
----
-
-### **Step 4: Fetching Data from the CORE API**
-
-Now that Axios is installed, let’s update the form submission to fetch real data from the CORE API.
-
----
-
-#### **Steps to Make an API Request**:
-
-1. **Update the `handleSubmit` function** to fetch data:
-   ```jsx
-   function SearchForm() {
-     const [query, setQuery] = useState('');
-     const [results, setResults] = useState([]);
-     const [error, setError] = useState(null);
-     const [loading, setLoading] = useState(false);
-
-     const API_KEY = 'YOUR_API_KEY'; // Replace with your CORE API key
-
-     const handleInputChange = (e) => {
-       setQuery(e.target.value);
-     };
-
-     const handleSubmit = async (e) => {
-       e.preventDefault();
-       setLoading(true);  // Start loading
-       setError(null);    // Clear any previous errors
-
-       try {
-         const response = await axios.get(
-           `https://core.ac.uk:443/api-v2/articles/search/${query}?apiKey=${API_KEY}`
-         );
-         setResults(response.data.data);  // Assuming response.data.data contains the search results
-       } catch (error) {
-         setError('Failed to fetch results. Please try again.');
-       } finally {
-         setLoading(false);  // Stop loading once the request is done
-       }
-     };
-
-     return (
-       <div>
-         <form onSubmit={handleSubmit}>
-           <input
-             type="text"
-             placeholder="Search for research papers"
-             value={query}
-             onChange={handleInputChange}
-           />
-           <button type="submit">Search</button>
-         </form>
-         <p>Your search query: {query}</p>
-
-         {loading && <p>Loading...</p>}  {/* Show loading spinner */}
-         {error && <p>{error}</p>}       {/* Show error message if there's an error */}
-
-         {/* Render the search results */}
-         <ul>
-           {results.map((result) => (
-             <li key={result.id}>
-               <h3>{result.title}</h3>
-               <p>{result.description}</p>
-               <a href={result.downloadUrl} target="_blank" rel="noopener noreferrer">
-                 Full Text
-               </a>
-             </li>
-           ))}
-         </ul>
-       </div>
-     );
-   }
-   ```
-
----
-
-### **Explanation**:
-
-1. **Managing State**:
-   - We introduce two additional pieces of state:
-     - `loading`: To show a loading spinner while waiting for the API response.
-     - `error`: To handle errors, such as network issues or bad requests.
-
-2. **The `handleSubmit` Function**:
-   - We make an HTTP GET request to the CORE API using **Axios** inside the `handleSubmit` function.
-   - The URL uses **template literals** (`${query}`) to insert the user's search term into the API request URL.
-   - If the request is successful, we store the results in the `results` state using `setResults()`.
-   - If the request fails, we catch the error and display an error message by setting the `error` state.
-
-3. **Error Handling**:
-   - If an error occurs (e.g., network failure or invalid API key), we display an error message to the user using the `error` state.
-   - **Why It's Important**: Handling errors gracefully is a key part of building robust production applications. You never want your app to crash silently or provide poor user feedback if something goes wrong.
-
-4. **Loading State**:
-   - We use the `loading` state to show a "Loading..." message while the API call is being made.
-   - **Why It's Important**: Providing feedback to users while waiting for data improves the user experience, especially when dealing with slower network conditions or large datasets.
-
-5. **Displaying the Results**:
-   - We map over the `results` array and render a list of research papers. Each list item includes the title, description, and a link to the full-text article.
-
----
-
-### **Step 5: Testing the API Integration**
-
-1. **Run the Application**:
-   - Start your React app by running:
-     ```bash
-     npm start
-     ```
-   - You should now be able to search for research papers. If everything works correctly, you’ll see real search results from the CORE API displayed in your app.
-
-2. **Check the Console for Errors**:
-   - If there are issues with the API key or the request, check your browser’s developer console for error messages. If the request fails, ensure that your API key is correctly set and that the query is valid.
-
----
-
-### **Step 6: Best Practices for Handling API Keys in Production**
-
-#### **Why This Is Important**:
-When deploying applications, it’s critical not to hardcode sensitive information like API keys directly into your codebase. This can lead to security issues, especially if your project is stored in a public GitHub repository.
-
-#### **Best Practices**:
-
-1. **Use Environment Variables**:
-   - Instead of hardcoding the API key directly in your code, use environment variables to store sensitive data.
-   - **How to Do This**:
-     - Create a `.env` file in the root of your project and add your API key like this:
-       ```bash
-       REACT_APP_CORE_API_KEY=your_api_key_here
-       ```
-     - Then, in your `App.js` or `SearchForm.js` file, access the API key like this:
-       ```javascript
-       const API_KEY = process.env.REACT_APP_CORE_API_KEY;
-       ```
-   - **Why It's Important**: Environment variables keep sensitive data out of your source code and make it easier to change settings when deploying to different environments (e.g., staging, production).
-
-2. **Never Push API Keys to GitHub**:
-   - Add `.env` to your `.gitignore` file to ensure your environment variables are not pushed to version control.
-   - If using GitHub or other public repositories, **always** ensure that your API keys are not exposed.
-
----
-
-### **Step 7: Generalizing These Concepts for Other APIs**
-
-The patterns used to integrate the CORE API can be generalized to other APIs in various types of applications:
-
-1. **API Integration**:
-   - Whether fetching movie data, weather information, or financial data, the process of making HTTP requests using Axios or `fetch` is consistent across applications. The same principles apply: make the request, handle loading and errors, and render the results.
-
-2. **Handling State**:
-   - Using `useState` to manage loading, error, and data states is a common React pattern when working with APIs. This structure can be reused for any form of data fetching, from user login requests to complex dashboards with real-time data.
-
-3. **Error Handling**:
-   - Whether you’re dealing with form submissions or external API requests, error handling is crucial for building reliable applications. Learning how to catch errors and give user-friendly feedback is essential for creating production-ready apps.
-
-4. **Environment Variables**:
-   - Using environment variables is a best practice for managing sensitive data (like API keys) in any application. This applies to any API-based app, including those fetching data for e-commerce, social media, or financial services.
-
----
-
-### **Next Steps**
-
-In the next lesson, we’ll break down our app into **reusable components**
-
- and clean up the code structure, which will help keep our app organized and scalable as we add more features.
-
-Let me know if you're ready to move on to **Lesson 4: Creating Reusable Components for Results** or if you have any questions about this part of the lesson!
+By following these steps, you now have a functional research paper search engine that can fetch and display results from the CORE API!
