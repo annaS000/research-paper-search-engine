@@ -170,68 +170,262 @@ The `api.js` file contains the functions responsible for interacting with the CO
 ```javascript
 // api.js
 
-// Function to query the API, with optional scrollId for pagination
-export async function queryApi(searchUrl, query, scrollId = null) {
+// api.js
+
+// Helper function to add delay (with optional jitter)
+function delay(ms) {
+    return new Promise((resolve) => setTimeout(resolve, ms));
+}
+
+// Helper function for random jitter
+function getRandomJitter(min, max) {
+    return Math.random() * (max - min) + min;
+}
+
+// Function to query the API using fetch with exponential backoff and retry logic
+export async function queryApi(searchUrl, query, scrollId = null, attempt = 1) {
+    const MAX_RETRIES = 5; // Max retry attempts
     const headers = {
-        Authorization: `Bearer ${"B8Z........JNSw"}`,  // Replace with your API key
+        Authorization: `Bearer ${process.env.REACT_APP_CORE_API_KEY}`,  // Use environment variables for the API key
     };
 
-    // Construct the URL for the API request
+    // Construct the API URL, including scrollId if paginating
     let url = scrollId
-      ? `${searchUrl}?q=${encodeURIComponent(query)}&limit=5&scrollId=${scrollId}`  // If scrolling, include scrollId
-      : `${searchUrl}?q=${encodeURIComponent(query)}&limit=5&scroll=true`;  // Initial request with scroll enabled
+        ? `${searchUrl}?q=${encodeURIComponent(query)}&limit=5&scrollId=${scrollId}`
+        : `${searchUrl}?q=${encodeURIComponent(query)}&limit=5&scroll=true`;
 
     try {
         const response = await fetch(url, { headers });
 
-        // Handle "Too Many Requests" error (rate limit)
-        if (response.status === 429) {
-            console.warn('Too many requests. Retrying after delay...');
-            await delay(3000);  // Wait 3 seconds before retrying
-            return queryApi(searchUrl, query, scrollId);  // Retry the request
+        // Handle rate limiting (HTTP 429) by retrying with exponential backoff and jitter
+        if (response.status === 429 && attempt <= MAX_RETRIES) {
+            const delayTime = Math.min(3000 * Math.pow(2, attempt - 1), 30000) + getRandomJitter(0, 1000);
+            console.warn(`Rate limited. Retrying in ${delayTime / 1000} seconds (Attempt ${attempt})...`);
+            await delay(delayTime);
+            return queryApi(searchUrl, query, scrollId, attempt + 1); // Retry with incremented attempt count
         }
 
+        // Throw an error for other unsuccessful responses
         if (!response.ok) {
-            throw new Error('Failed to fetch results');  // Handle general API errors
+            throw new Error(`Failed to fetch results: ${response.statusText}`);
         }
 
-        const data = await response.json();  // Parse the response data
-        return { data, elapsed: response.elapsed || 0 };  // Return data and response time
+        // Parse the response data as JSON
+        const data = await response.json();
+        return { data, elapsed: response.elapsed || 0 };
     } catch (error) {
-        console.error('Error fetching data:', error);  // Log and return error
-        return { data: null, error: error.message };
+        console.error('API request failed:', error.message);
+
+        // If max retries are reached, return the error message
+        if (attempt > MAX_RETRIES) {
+            throw new Error('Max retries reached. Failed to fetch results.');
+        }
+
+        // Re-throw the error to be handled at the caller level
+        throw error;
     }
 }
 
-// Helper function to add a delay between requests
-function delay(ms) {
-    return new Promise(resolve => setTimeout(resolve, ms));
-}
-
-// Function to handle pagination (scrolling through results)
+// Function to handle paginated results (scrolling)
 export async function scroll(searchUrl, query) {
     let allResults = [];
-    let scrollId = null;  // Scroll ID for pagination
+    let scrollId = null;
 
+    // Loop to keep fetching results until no more are available
     while (true) {
-        const { data, error } = await queryApi(searchUrl, query, scrollId);
+        try {
+            const { data } = await queryApi(searchUrl, query, scrollId);
 
-        if (error || !data || !data.results) {
-            console.error('Failed to retrieve data:', error);
+            // If no data or results, break the loop
+            if (!data || !data.results || data.results.length === 0) break;
+
+            // Append the results to the accumulated list
+            allResults = [...allResults, ...data.results];
+            scrollId = data.scrollId; // Update scrollId for the next page
+        } catch (error) {
+            console.error('Failed to retrieve data:', error.message);
             break;
         }
 
-        scrollId = data.scrollId;  // Update the scrollId for the next page of results
-        const results = data.results;
-        if (results.length === 0) break;  // Stop if no more results
-
-        allResults = [...allResults, ...results];  // Append new results
-        await delay(3000);  // Delay between requests to avoid rate limits
+        // Delay to avoid rate-limiting between requests
+        await delay(3000);
     }
 
-    return allResults;  // Return all collected results
+    return allResults; // Return all accumulated results
 }
 
+// Function to extract necessary information from API results
+export function extractInfo(results) {
+    if (!Array.isArray(results)) {
+        console.error('Expected an array of results');
+        return [];
+    }
+
+    // Extract relevant fields from each result
+    return results.map((result) => {
+        const title = result.title || "No title available";
+        const description = result.abstract || "No description available";
+        const displayLink = result.links.find(link => link.type === 'display')?.url || "#";
+        const downloadLink = result.links.find(link => link.type === 'download')?.url || "#";
+
+        return {
+            title,
+            description,
+            displayLink,
+            downloadLink,
+        };
+    });
+}
+```
+
+Let's break down the `api.js` file into smaller, logical chunks and explain each part in detail.
+
+### 1. **Delay Function with Optional Jitter**
+
+```javascript
+// Helper function to add delay (with optional jitter)
+function delay(ms) {
+    return new Promise((resolve) => setTimeout(resolve, ms));
+}
+
+// Helper function for random jitter
+function getRandomJitter(min, max) {
+    return Math.random() * (max - min) + min;
+}
+```
+
+#### **Explanation:**
+- **`delay(ms)`**: This function returns a promise that resolves after `ms` milliseconds. It’s a way to pause the execution of code for a set amount of time, often used between retries to avoid overwhelming an API.
+  
+- **`getRandomJitter(min, max)`**: This function adds randomness (or **jitter**) to the delay. It generates a random number between `min` and `max`. Jitter helps prevent all retry requests from being made at the exact same time, reducing the chance of hitting rate limits again.
+
+---
+
+### 2. **Query Function with Exponential Backoff for Retries**
+
+```javascript
+// Function to query the API using fetch with exponential backoff and retry logic
+export async function queryApi(searchUrl, query, scrollId = null, attempt = 1) {
+    const MAX_RETRIES = 5; // Max retry attempts
+    const headers = {
+        Authorization: `Bearer ${process.env.REACT_APP_CORE_API_KEY}`,  // Use environment variables for the API key
+    };
+
+    // Construct the API URL, including scrollId if paginating
+    let url = scrollId
+        ? `${searchUrl}?q=${encodeURIComponent(query)}&limit=5&scrollId=${scrollId}`
+        : `${searchUrl}?q=${encodeURIComponent(query)}&limit=5&scroll=true`;
+
+    try {
+        const response = await fetch(url, { headers });
+
+        // Handle rate limiting (HTTP 429) by retrying with exponential backoff and jitter
+        if (response.status === 429 && attempt <= MAX_RETRIES) {
+            const delayTime = Math.min(3000 * Math.pow(2, attempt - 1), 30000) + getRandomJitter(0, 1000);
+            console.warn(`Rate limited. Retrying in ${delayTime / 1000} seconds (Attempt ${attempt})...`);
+            await delay(delayTime);
+            return queryApi(searchUrl, query, scrollId, attempt + 1); // Retry with incremented attempt count
+        }
+
+        // Throw an error for other unsuccessful responses
+        if (!response.ok) {
+            throw new Error(`Failed to fetch results: ${response.statusText}`);
+        }
+
+        // Parse the response data as JSON
+        const data = await response.json();
+        return { data, elapsed: response.elapsed || 0 };
+    } catch (error) {
+        console.error('API request failed:', error.message);
+
+        // If max retries are reached, return the error message
+        if (attempt > MAX_RETRIES) {
+            throw new Error('Max retries reached. Failed to fetch results.');
+        }
+
+        // Re-throw the error to be handled at the caller level
+        throw error;
+    }
+}
+```
+
+#### **Explanation:**
+- **`MAX_RETRIES`**: This defines the maximum number of times the API request will retry in case of failure (especially for rate limiting errors like `429`).
+  
+- **`headers`**: We set the headers for the API request, which includes an **Authorization** header with the API key. This API key is securely fetched from environment variables using `process.env.REACT_APP_CORE_API_KEY`.
+
+- **URL Construction**:
+  - The URL is dynamically built. If a `scrollId` is provided (for paginated requests), it’s included in the URL. Otherwise, the initial URL query is constructed with `scroll=true` to enable pagination.
+  - The `limit=5` parameter limits the results to 5 items per request to avoid fetching too much data in one go.
+
+- **`fetch(url, { headers })`**: This is the core part that performs the actual HTTP request to the API using `fetch`.
+
+- **Handling Rate Limiting (429 Status)**:
+  - If the API responds with a `429` (Too Many Requests), the function waits using exponential backoff and **jitter** to retry the request.
+  - The retry delay grows exponentially: `3000 * Math.pow(2, attempt - 1)`. It also caps at 30 seconds to avoid excessive wait times.
+  - **Jitter** adds a small random delay to make retries less predictable and to avoid overloading the server.
+
+- **Retries and Error Handling**:
+  - The function retries the request up to `MAX_RETRIES` times if rate limiting occurs.
+  - If an error occurs and retries are exhausted, an error message is thrown, which the calling code can handle.
+
+- **Response Parsing**:
+  - If the response is successful (`response.ok` is true), the response data is parsed into JSON and returned along with any `elapsed` time (if available).
+
+---
+
+### 3. **Scroll Function for Paginated API Results**
+
+```javascript
+// Function to handle paginated results (scrolling)
+export async function scroll(searchUrl, query) {
+    let allResults = [];
+    let scrollId = null;
+
+    // Loop to keep fetching results until no more are available
+    while (true) {
+        try {
+            const { data } = await queryApi(searchUrl, query, scrollId);
+
+            // If no data or results, break the loop
+            if (!data || !data.results || data.results.length === 0) break;
+
+            // Append the results to the accumulated list
+            allResults = [...allResults, ...data.results];
+            scrollId = data.scrollId; // Update scrollId for the next page
+        } catch (error) {
+            console.error('Failed to retrieve data:', error.message);
+            break;
+        }
+
+        // Delay to avoid rate-limiting between requests
+        await delay(3000);
+    }
+
+    return allResults; // Return all accumulated results
+}
+```
+
+#### **Explanation:**
+- **Purpose**: This function is responsible for handling **pagination** (or "scrolling") in the API results. It continuously fetches more results until there are no more pages to fetch.
+
+- **`scrollId`**: This is an identifier returned by the API after each request. It tells the API where to continue from when fetching the next page of results.
+
+- **While Loop**:
+  - The loop continues to make API requests as long as there are more results to fetch. After each request, the results are appended to the `allResults` array.
+  - If no results are returned, the loop breaks.
+  - After each request, the function waits 3 seconds before making another request (to avoid rate-limiting issues).
+
+- **Error Handling**:
+  - If any error occurs during a request, it logs the error message and breaks out of the loop.
+  
+- **Return Value**: The function returns all the results after fetching all available pages.
+
+---
+
+### 4. **Extract Information Function**
+
+```javascript
 // Function to extract relevant information from API results
 export function extractInfo(results) {
     if (!Array.isArray(results)) {
@@ -244,9 +438,7 @@ export function extractInfo(results) {
         const title = result.title || "No title available";
         const description = result.abstract || "No description available";
         const displayLink = result.links.find(link => link.type === 'display')?.url || "#";
-        const downloadLink = result.links.find(link => link.type === 'download')?.
-
-url || "#";
+        const downloadLink = result.links.find(link => link.type === 'download')?.url || "#";
 
         return {
             title,
@@ -258,9 +450,33 @@ url || "#";
 }
 ```
 
-- **`queryApi`**: Handles the main API request logic, including rate limiting and pagination.
-- **`scroll`**: Manages scrolling/pagination by repeatedly calling `queryApi` to fetch subsequent pages of results.
-- **`extractInfo`**: Extracts key information (title, description, links) from the API response for rendering in the UI.
+#### **Explanation:**
+- **Purpose**: This function processes the raw results from the API and extracts only the relevant fields needed for display (e.g., title, description, and links).
+
+- **Error Handling**: It first checks if the input (`results`) is an array. If it’s not, it logs an error and returns an empty array.
+
+- **Mapping**:
+  - For each `result` in the array, it attempts to extract:
+    - **Title**: If the title is missing, it defaults to "No title available."
+    - **Description**: If the abstract/description is missing, it defaults to "No description available."
+    - **Display Link**: If no display link is found, it defaults to `"#"`.
+    - **Download Link**: If no download link is found, it defaults to `"#"`.
+
+- **Return Value**: The function returns a new array of objects, each containing the extracted information (title, description, displayLink, downloadLink).
+
+---
+
+### **Summary:**
+
+1. **Delay and Retry Logic**: The `delay` and retry logic help manage rate-limiting by pausing between retries and progressively increasing the wait time for each attempt.
+
+2. **`queryApi`**: This function performs the core API request, handles retries with backoff, and ensures that requests are retried up to a maximum limit in case of rate-limiting.
+
+3. **`scroll`**: This function is used to handle pagination by continuously requesting more data until no more results are available, respecting the API’s rate limits between requests.
+
+4. **`extractInfo`**: This function processes raw API results and extracts the fields that are relevant for display, ensuring that missing values are handled gracefully.
+
+This approach ensures that the API is used efficiently and the application doesn’t overwhelm the server with too many requests in a short time, while handling potential errors and providing useful feedback for troubleshooting.
 
 ---
 
