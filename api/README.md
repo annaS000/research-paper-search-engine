@@ -159,9 +159,175 @@ function Search() {
 export default Search;
 ```
 
-- **State Management**: The component uses React's `useState` to manage the search query, results, loading state, and error messages.
-- **API Request**: On form submission, the `scroll` function is called to fetch results from the API.
-- **Display Logic**: Results are displayed as a list with the title, description, and links to view or download the paper.
+Let's break down the `Search.jsx` file into logical chunks and explain each part in detail.
+
+### 1. **State Initialization and Imports**
+
+```javascript
+import React, { useState } from 'react';
+import { scroll, extractInfo } from '../util/api.js';  // Import the utility functions
+
+function Search() {
+    const [query, setQuery] = useState('');      // State to hold the user's search query
+    const [results, setResults] = useState([]);  // State to hold search results
+    const [loading, setLoading] = useState(false);  // State to track loading status
+    const [error, setError] = useState(null);    // State to track any error messages
+```
+
+#### **Explanation:**
+- **Imports**:
+  - **`scroll`**: This is the function from `api.js` that handles fetching and paginating results from the API.
+  - **`extractInfo`**: This is the function that processes raw API data and extracts relevant information for display (e.g., titles, descriptions, links).
+
+- **State Variables**:
+  - **`query`**: Stores the user's search input. It's updated whenever the user types in the search box.
+  - **`results`**: This array holds the results returned from the API after processing.
+  - **`loading`**: A boolean flag that indicates whether the search is currently in progress. It helps display a loading message while the data is being fetched.
+  - **`error`**: Stores any error messages that occur during the search (e.g., API issues), which can then be displayed to the user.
+
+---
+
+### 2. **Search URL Declaration**
+
+```javascript
+    const searchUrl = 'https://api.core.ac.uk/v3/search/works';  // The API URL for searching works
+```
+
+#### **Explanation:**
+- **`searchUrl`**: This is the base URL of the API that will be used to perform the search queries. The `scroll` function from `api.js` will append the query and other parameters to this base URL to make API calls.
+
+---
+
+### 3. **Search Handler Function**
+
+```javascript
+    const handleSearch = async (e) => {
+        e.preventDefault();  // Prevent the form from submitting and reloading the page
+        setLoading(true);    // Set loading state to true while waiting for the API response
+        setError(null);      // Clear any previous error messages
+        setResults([]);      // Clear any previous results
+
+        try {
+            // Call the scroll function to fetch the results
+            const fetchedResults = await scroll(searchUrl, query);
+            // Process the results using the extractInfo function
+            const processedResults = extractInfo(fetchedResults);
+            setResults(processedResults);  // Update the results state with the processed data
+        } catch (err) {
+            setError(err.message);  // If an error occurs, store the error message
+        } finally {
+            setLoading(false);  // Set loading state to false once the request is finished
+        }
+    };
+```
+
+#### **Explanation:**
+- **`handleSearch`**: This is the main function that is triggered when the user submits the search form.
+
+- **Steps**:
+  1. **Prevent default form behavior**: The form's default behavior is to submit and reload the page, which is prevented here to keep the search results on the same page.
+  2. **Reset state**: Before initiating the search, it clears any existing results or errors and sets the `loading` flag to `true` to indicate that a search is in progress.
+  3. **Fetch results**: It calls the `scroll` function from `api.js`, passing in the search URL and query. This function handles the pagination and fetches all relevant data from the API.
+  4. **Process results**: Once the results are fetched, they are passed to the `extractInfo` function, which extracts the relevant fields (title, description, etc.) for display. The processed results are stored in the `results` state.
+  5. **Error handling**: If an error occurs during the fetch process, the error message is caught and saved in the `error` state for display to the user.
+  6. **Loading state**: The `loading` state is set back to `false` once the search process (either successful or failed) is completed.
+
+---
+
+### 4. **Search Form and UI**
+
+```javascript
+    return (
+        <div>
+            <form onSubmit={handleSearch}>  {/* Bind the search handler to the form */}
+                <input
+                    type="text"
+                    placeholder="Search for works"  // Placeholder text in the input box
+                    value={query}  // Bind the input value to the query state
+                    onChange={(e) => setQuery(e.target.value)}  // Update the query state as the user types
+                />
+                <button type="submit">Search</button>  {/* Button to submit the form */}
+            </form>
+```
+
+#### **Explanation:**
+- **Form**:
+  - The form contains an input field and a submit button.
+  - **Input Field**: The input value is bound to the `query` state using `value={query}`. As the user types, the `onChange` handler updates the `query` state with the new input value.
+  - **Submit Button**: The form is submitted when the user clicks the "Search" button or presses Enter. The `onSubmit` handler is linked to the `handleSearch` function, which initiates the API request.
+
+---
+
+### 5. **Loading and Error Handling**
+
+```javascript
+            {loading && <p>Loading...</p>}  {/* Show loading text if a search is in progress */}
+            {error && <p>Error: {error}</p>}  {/* Show an error message if an error occurs */}
+```
+
+#### **Explanation:**
+- **Loading Indicator**:
+  - If `loading` is `true`, a "Loading..." message is displayed while waiting for the API to return the results.
+
+- **Error Handling**:
+  - If there is an error (i.e., if `error` is not `null`), an error message is displayed to inform the user of what went wrong during the search process.
+
+---
+
+### 6. **Displaying Results**
+
+```javascript
+            <ul>
+                {results.map((result, index) => (
+                    <li key={index}>  {/* Use index as the key for each result */}
+                        <h2>{result.title}</h2>  {/* Display the title of the work */}
+                        <p>{result.description}</p>  {/* Display the description/abstract */}
+                        <div>
+                            {/* Link to view details of the work */}
+                            <a href={result.displayLink} target="_blank" rel="noopener noreferrer">
+                                View Details
+                            </a>
+                            {' | '}
+                            {/* Link to download the work */}
+                            <a href={result.downloadLink} target="_blank" rel="noopener noreferrer">
+                                Download
+                            </a>
+                        </div>
+                    </li>
+                ))}
+            </ul>
+        </div>
+    );
+}
+```
+
+#### **Explanation:**
+- **Results Display**:
+  - The results are rendered inside an unordered list (`<ul>`).
+  - **`results.map()`**: The `results` array is mapped over, and for each result, a list item (`<li>`) is created with the following content:
+    - **Title**: The title of the work is displayed inside an `<h2>` tag.
+    - **Description**: The abstract or description of the work is displayed inside a `<p>` tag.
+    - **Links**: Two links are provided:
+      - **"View Details"**: A link to the display page for the work. It opens in a new tab using `target="_blank"` with `rel="noopener noreferrer"` for security.
+      - **"Download"**: A link to download the work.
+
+- **Key Prop**: Each list item is given a unique `key` using the index of the result. In production code, using a unique ID for the key (if available) would be better, but here the index is sufficient for a list of results that do not dynamically update.
+
+---
+
+### **Summary:**
+
+1. **State Management**: The component uses React's `useState` hook to manage the search query, results, loading state, and any errors that occur during the search.
+
+2. **API Interaction**: The `handleSearch` function manages the search process. It triggers the API request by calling `scroll`, processes the results with `extractInfo`, and handles errors and loading states.
+
+3. **User Interface**:
+   - A form allows the user to enter a search query.
+   - While waiting for results, a loading message is displayed.
+   - If an error occurs (e.g., an API issue), an error message is shown.
+   - The results, when returned, are displayed as a list of titles, descriptions, and links to view or download the works.
+
+By breaking down the `Search.jsx` file into these chunks, we see how the component efficiently manages state, communicates with the API, and provides a responsive user interface to display results.
 
 #### **api.js**
 
