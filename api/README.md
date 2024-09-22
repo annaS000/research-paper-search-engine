@@ -336,8 +336,6 @@ The `api.js` file contains the functions responsible for interacting with the CO
 ```javascript
 // api.js
 
-// api.js
-
 // Helper function to add delay (with optional jitter)
 function delay(ms) {
     return new Promise((resolve) => setTimeout(resolve, ms));
