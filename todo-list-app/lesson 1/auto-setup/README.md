@@ -69,24 +69,26 @@ Certainly! Let's provide a more detailed explanation of the `.eslintrc.json` con
 ```bash
 cat <<EOL > .eslintrc.json
 {
-  "env": {
+"env": {
     "browser": true,
     "es2021": true
-  },
-  "extends": [
+},
+"extends": [
     "eslint:recommended",
     "plugin:react/recommended",
     "prettier"
-  ],
-  "parserOptions": {
+],
+"parserOptions": {
     "ecmaFeatures": {
       "jsx": true
     },
     "ecmaVersion": 12,
     "sourceType": "module"
-  },
-  "plugins": ["react"],
-  "rules": {}
+},
+"plugins": ["react"],
+"rules": {
+    "react/prop-types": "off"
+}
 }
 EOL
 ```
