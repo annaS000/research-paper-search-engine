@@ -150,9 +150,11 @@ EOL
 
 #### **5. `"rules"` Section**
 ```json
-"rules": {}
+"rules": {
+  "react/prop-types": "off"
+}
 ```
-- **Explanation:** This section allows you to customize or override individual linting rules. It's currently empty, which means it will use all the default rules from the configurations specified in the `"extends"` section.
+- **Explanation:** This section allows you to customize or override individual linting rules. If it's currently empty, it will use all the default rules from the configurations specified in the `"extends"` section. We have added a rule to turn off prop-types for this lesson because we won't be discussing prop type validation on inputs and this will avoid any warnings as we work on the project.
 - **Why:** Having this section ready allows you to easily add or customize rules as needed. For example, if you want to enforce specific coding styles (like requiring semi-colons) or disable certain rules (like allowing console logs), you would add them here.
 
 #### **Summary of This Step:**
