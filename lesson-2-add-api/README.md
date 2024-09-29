@@ -1,4 +1,4 @@
-### Lesson: Implementing a Research Paper Search Engine with React
+### Lesson 2: Implementing the CORE API for Fetching Data
 
 In this lesson, we will walk through the process of creating a research paper search engine using React and the [CORE API](https://core.ac.uk). The project will allow users to search for academic papers by keywords, retrieve relevant results, and display details such as the paper title, abstract, and links to view or download the paper.
 
@@ -11,36 +11,27 @@ We'll also discuss how to get an API key, the importance of limiting request rat
 
 ---
 
-### **1. Setting Up the Project**
-
-Before diving into the code, ensure you have the following set up:
-
-- Node.js and npm installed.
-- A basic `React` project created using `create-react-app` or another setup method.
-
-You will need an API key from CORE to make requests to their API.
-
-### **2. Obtaining a CORE API Key**
+### **1. Obtaining a CORE API Key**
 
 1. Visit the [CORE website](https://core.ac.uk) and sign up for an account if you don’t have one.
 2. Navigate to the API section and request an API key. This key will allow you to access the research papers through the CORE API.
 3. Once you have the API key, you’ll need to include it in your project to authenticate API requests. You can either store it in an environment variable (`.env` file) or directly in the code (not recommended for production).
 
-### **3. Limiting Request Rate to Avoid API Rate Limits**
+### **2. Limiting Request Rate to Avoid API Rate Limits**
 
 API providers often impose rate limits to prevent overloading their servers. The CORE API is no exception. To avoid exceeding the limit:
 - Use a delay between subsequent requests (e.g., 3 seconds).
 - Ensure you don't make unnecessary requests, especially in a loop or continuous scrolling context.
 - Handle "429 Too Many Requests" responses gracefully by retrying the request after a delay.
 
-### **4. Understanding the API Response Structure**
+### **3. Understanding the API Response Structure**
 
 The CORE API returns a JSON object with several fields, including the results of the query and a `scrollId` for pagination. To display the search results properly, you’ll need to extract key pieces of information such as:
 - The title of the paper.
 - The abstract or description.
 - Links to view and download the paper.
 
-### **5. Project Structure**
+### **4. Project Structure**
 
 Here is an overview of the project structure:
 
@@ -53,7 +44,7 @@ Here is an overview of the project structure:
   - App.js
 ```
 
-### **6. Code Explanation**
+### **5. Code Explanation**
 
 Now, let's dive into the code.
 
@@ -644,7 +635,7 @@ This approach ensures that the API is used efficiently and the application doesn
 
 ---
 
-### **7. Summary**
+### **6. Summary**
 
 In this lesson, we:
 - Learned how to obtain and use an API key for the CORE API.

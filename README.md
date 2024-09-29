@@ -137,13 +137,12 @@ Now that we have the environment set up and Git ready, let's outline the lessons
 ### **Lesson 3: Integrating the CORE API**
 - **Goals**:
   - Learn how to fetch data from the CORE API.
-  - Use React’s `useEffect` hook to make API calls.
   - Display real search results dynamically based on user input.
 
 - **Steps**:
   1. Register for a free API key from the CORE API.
-  2. Make API requests using `fetch` or Axios.
-  3. Parse and display the search results in a styled list or grid.
+  2. Make API requests using `fetch`.
+  3. Parse and display the search results in a styled list.
 
 ---
 
