@@ -1,3 +1,13 @@
+### Table of Contents
+- [Lesson 5: Adding Local Storage and Item Removal](#lesson-5-adding-local-storage-and-item-removal)
+  - [Objectives of This Lesson](#objectives-of-this-lesson)
+  - [Steps](#steps)
+    - [Step 1: Update the `HomePage.js` Component](#step-1-update-the-homepagejs-component)
+    - [Step 2: Update `TodoList.js` to Include the "Remove" Button](#step-2-update-todolistjs-to-include-the-remove-button)
+    - [Step 3: Test the App](#step-3-test-the-app)
+
+---
+
 ### **Lesson 5: Adding Local Storage and Item Removal**
 
 In this lesson, we will:
@@ -100,3 +110,5 @@ In this lesson, we will:
   npm start
   ```
 - **Verify:** Add, toggle, and remove items from the list. Confirm that the to-do list persists across page reloads and that removed items do not reappear.
+
+--- 

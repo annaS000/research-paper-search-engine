@@ -1,3 +1,17 @@
+### Table of Contents
+- [Lesson 4: Creating the `AddTodo` Component](#lesson-4-creating-the-addtodo-component)
+  - [Objectives of This Lesson](#objectives-of-this-lesson)
+  - [Steps](#steps)
+    - [Step 1: Create the `AddTodo.js` Component](#step-1-create-the-addtodojs-component)
+    - [Step 2: Update `HomePage.js` to Use `AddTodo`](#step-2-update-homepagejs-to-use-addtodo)
+    - [Step 3: Test the App](#step-3-test-the-app)
+    - [Step 4: Discuss Data Flow and Component Communication](#step-4-discuss-data-flow-and-component-communication)
+  - [Final Notes for This Lesson](#final-notes-for-this-lesson)
+  - [Try It Out](#try-it-out)
+  - [Links for Further Reading](#links-for-further-reading)
+
+---
+
 ### **Lesson 4: Creating the `AddTodo` Component**
 
 In this lesson, we'll create the `AddTodo` component, which will contain an input field and a button to allow users to add new items to the to-do list. We will handle user input, utilize state management within the component, and pass the input data back to the parent component (`HomePage`) using a callback function.
@@ -112,7 +126,7 @@ In this lesson, we'll create the `AddTodo` component, which will contain an inpu
   - The to-do list updated with each new item added via the form.
   - The ability to toggle completion status by clicking on a to-do item.
 
-### **Step 4: Discuss Data Flow and Component Communication**
+#### **Step 4: Discuss Data Flow and Component Communication**
 - **Data Flow:** The `AddTodo` component captures user input and sends it to the `HomePage` component through the `addTodo` function passed as a prop.
 - **Component Communication:** This illustrates how child components (`AddTodo`) can communicate with their parent (`HomePage`) using callback functions provided through props.
 
@@ -128,3 +142,5 @@ In this lesson, we'll create the `AddTodo` component, which will contain an inpu
 ### **Links for Further Reading:**
 - [Handling Forms in React](https://reactjs.org/docs/forms.html)
 - [Lifting State Up](https://reactjs.org/docs/lifting-state-up.html)
+
+---

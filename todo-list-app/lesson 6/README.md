@@ -1,3 +1,17 @@
+### Table of Contents
+- [Lesson 6: Styling the To-Do List with Material-UI (MUI) and Custom CSS](#lesson-6-styling-the-to-do-list-with-material-ui-mui-and-custom-css)
+  - [Objectives of This Lesson](#objectives-of-this-lesson)
+  - [Steps](#steps)
+    - [Step 1: Install Material-UI](#step-1-install-material-ui)
+    - [Step 2: Update `AddTodo.js` to Use Material-UI Components](#step-2-update-addtodojs-to-use-material-ui-components)
+    - [Step 3: Update `TodoList.js` to Use Material-UI Components](#step-3-update-todolistjs-to-use-material-ui-components)
+    - [Step 4: Add a Custom CSS File for Additional Styling](#step-4-add-a-custom-css-file-for-additional-styling)
+    - [Step 5: Apply the Custom Styles in `HomePage.js`](#step-5-apply-the-custom-styles-in-homepagejs)
+    - [Step 6: Test the App](#step-6-test-the-app)
+  - [Importance of Modern, Responsive UIs](#importance-of-modern-responsive-uis)
+
+---
+
 ### **Lesson 6: Styling the To-Do List with Material-UI (MUI) and Custom CSS**
 
 In this lesson, we will:
@@ -200,3 +214,5 @@ In this lesson, we will:
 - **User Experience:** A clean and responsive UI ensures a positive user experience, increasing user engagement and satisfaction.
 - **Consistency:** Using component libraries like Material-UI provides a consistent look and feel across different parts of the application.
 - **Accessibility:** Material-UI components are built with accessibility in mind, making it easier to create inclusive applications.
+
+---

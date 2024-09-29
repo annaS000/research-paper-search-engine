@@ -1,3 +1,16 @@
+### Table of Contents
+- [Lesson 2: Creating the Main Page Component (`HomePage.js`)](#lesson-2-creating-the-main-page-component-homepagejs)
+  - [Objectives of This Lesson](#objectives-of-this-lesson)
+  - [Steps](#steps)
+    - [Step 1: Create the `HomePage.js` Component](#step-1-create-the-homepagejs-component)
+    - [Step 2: Render `HomePage` in `App.js`](#step-2-render-homepage-in-appjs)
+    - [Step 3: Discuss the Flow of Data and Props (Touch Lightly)](#step-3-discuss-the-flow-of-data-and-props-touch-lightly)
+  - [Final Notes for This Lesson](#final-notes-for-this-lesson)
+  - [Try It Out](#try-it-out)
+  - [Links for Further Reading](#links-for-further-reading)
+
+---
+
 ### **Lesson 2: Creating the Main Page Component (`HomePage.js`)**
 
 In this updated lesson, we’ll modify the `HomePage.js` component to include simple placeholders for adding a to-do item and displaying the to-do list. This will ensure the functions `addTodo` and `toggleTodo` are used, avoiding any ESLint warnings. We will also discuss how these placeholders will be replaced with more comprehensive components in future lessons.
@@ -7,7 +20,7 @@ In this updated lesson, we’ll modify the `HomePage.js` component to include si
 - Implement state management using React's `useState` hook.
 - Set up the `HomePage` component to include:
   - A button to add a sample to-do item using the `addTodo` function.
-  - A list to display the to-do items and toggle their completion status using the `toggleTodo` function
+  - A list to display the to-do items and toggle their completion status using the `toggleTodo` function.
 
 ### **Steps:**
 
@@ -65,7 +78,7 @@ In this updated lesson, we’ll modify the `HomePage.js` component to include si
    - **Using Placeholders:**
      - A button (`<button>`) uses the `addTodo` function to add a sample to-do item to the list.
      - An unordered list (`<ul>`) displays the list of to-do items, using the `toggleTodo` function to mark items as completed when clicked.
-   - **Why:** This setup ensures that both `addTodo` and `toggleTodo` are used to eliminate ESLint warnings
+   - **Why:** This setup ensures that both `addTodo` and `toggleTodo` are used to eliminate ESLint warnings.
 
 #### **Step 2: Render `HomePage` in `App.js`**
 1. Open `App.js` in the `src` folder.
@@ -111,3 +124,5 @@ In this updated lesson, we’ll modify the `HomePage.js` component to include si
 ### **Links for Further Reading:**
 - [React State and Lifecycle](https://reactjs.org/docs/state-and-lifecycle.html)
 - [React Hooks – `useState`](https://reactjs.org/docs/hooks-state.html)
+
+---

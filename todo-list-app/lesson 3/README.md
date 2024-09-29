@@ -1,3 +1,17 @@
+### Table of Contents
+- [Lesson 3: Creating the `TodoList` Component](#lesson-3-creating-the-todolist-component)
+  - [Objectives of This Lesson](#objectives-of-this-lesson)
+  - [Steps](#steps)
+    - [Step 1: Create the `TodoList.js` Component](#step-1-create-the-todolistjs-component)
+    - [Step 2: Refactor `HomePage.js` to Use `TodoList`](#step-2-refactor-homepagejs-to-use-todolist)
+    - [Step 3: Test the App](#step-3-test-the-app)
+    - [Step 4: Discuss the Flow of Data and Props](#step-4-discuss-the-flow-of-data-and-props)
+  - [Final Notes for This Lesson](#final-notes-for-this-lesson)
+  - [Try It Out](#try-it-out)
+  - [Links for Further Reading](#links-for-further-reading)
+
+---
+
 ### **Lesson 3: Creating the `TodoList` Component**
 
 In this lesson, we will create the `TodoList` component to handle the rendering of to-do items. This component will receive data from its parent (`HomePage`) through props, displaying the list of to-do items and allowing interactions like toggling their completion status. 
@@ -115,3 +129,5 @@ By the end of this lesson, you’ll understand how to create reusable components
 ### **Links for Further Reading:**
 - [React – Passing Data Through Props](https://reactjs.org/docs/components-and-props.html)
 - [Lists and Keys in React](https://reactjs.org/docs/lists-and-keys.html)
+
+---
