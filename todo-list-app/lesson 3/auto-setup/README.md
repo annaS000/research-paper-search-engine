@@ -1,10 +1,9 @@
 ## **How to Use the Script:**
-1. Save the script as `setup-todolist.sh` in the `lesson 3/auto-setup/` directory (similar structure as shown in your previous uploads).
-2. Make the script executable:
+1. Make the script executable:
    ```bash
    chmod +x setup-todolist.sh
    ```
-3. Run the script:
+2. Run the script:
    ```bash
    ./setup-todolist.sh
    ```

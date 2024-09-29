@@ -1,96 +1,70 @@
-### **Lesson 5: Adding Local Storage to Persist To-Do Items**
+# Getting Started with Create React App
 
-In this lesson, we’ll enhance our to-do list application by adding data persistence using the browser’s local storage. This will allow users to refresh the page or close and reopen the browser without losing their to-do list. We will modify the `HomePage` component to store and retrieve the to-do items using the `localStorage` API.
+This project was bootstrapped with [Create React App](https://github.com/facebook/create-react-app).
 
-### **Objectives of This Lesson:**
-- Utilize `localStorage` to persist to-do items.
-- Load stored to-do items from `localStorage` when the app initializes.
-- Update `localStorage` whenever the to-do list changes.
+## Available Scripts
 
-### **Steps:**
+In the project directory, you can run:
 
-#### **Step 1: Update the `HomePage.js` Component to Use Local Storage**
-1. Open `HomePage.js` in the `src/pages/` folder.
-2. Modify the component to include the use of `localStorage`:
-   ```javascript
-   import React, { useState, useEffect } from 'react';
-   import TodoList from '../components/TodoList';
-   import AddTodo from '../components/AddTodo';
+### `npm start`
 
-   const HomePage = () => {
-     // Load to-dos from local storage or initialize to an empty array
-     const [todos, setTodos] = useState(() => {
-       const savedTodos = localStorage.getItem('todos');
-       return savedTodos ? JSON.parse(savedTodos) : [];
-     });
+Runs the app in the development mode.\
+Open [http://localhost:3000](http://localhost:3000) to view it in your browser.
 
-     // Update local storage whenever the 'todos' state changes
-     useEffect(() => {
-       localStorage.setItem('todos', JSON.stringify(todos));
-     }, [todos]);
+The page will reload when you make changes.\
+You may also see any lint errors in the console.
 
-     // Function to add a new to-do item
-     const addTodo = (text) => {
-       const newTodo = { id: Date.now(), text: text, completed: false };
-       setTodos([...todos, newTodo]);
-     };
+### `npm test`
 
-     // Function to toggle the completion status of a to-do item
-     const toggleTodo = (id) => {
-       const updatedTodos = todos.map((todo) =>
-         todo.id === id ? { ...todo, completed: !todo.completed } : todo
-       );
-       setTodos(updatedTodos);
-     };
+Launches the test runner in the interactive watch mode.\
+See the section about [running tests](https://facebook.github.io/create-react-app/docs/running-tests) for more information.
 
-     return (
-       <div>
-         <h1>My To-Do List</h1>
-         
-         {/* Use the AddTodo component */}
-         <AddTodo addTodo={addTodo} />
+### `npm run build`
 
-         {/* Use the TodoList component */}
-         <TodoList todos={todos} toggleTodo={toggleTodo} />
-       </div>
-     );
-   };
+Builds the app for production to the `build` folder.\
+It correctly bundles React in production mode and optimizes the build for the best performance.
 
-   export default HomePage;
-   ```
+The build is minified and the filenames include the hashes.\
+Your app is ready to be deployed!
 
-3. **Explanation of Code:**
-   - **Loading from `localStorage`:** 
-     - The `useState` hook’s initializer function checks `localStorage` for any saved to-do items. It uses `JSON.parse()` to convert the stored JSON string back into an array. If there’s nothing in `localStorage`, it initializes `todos` as an empty array.
-   - **Saving to `localStorage`:** 
-     - The `useEffect` hook listens for changes to the `todos` state. Whenever `todos` changes, it updates the `localStorage` by converting the array to a JSON string using `JSON.stringify()`.
-   - **Persisting State:** This setup ensures that to-do items are saved to and loaded from `localStorage`, providing persistence across page reloads.
+See the section about [deployment](https://facebook.github.io/create-react-app/docs/deployment) for more information.
 
-#### **Step 2: Test the App**
-- Save all changes and run the app using:
-  ```bash
-  npm start
-  ```
-- **Verify:** Add a few to-do items, then refresh the page. The to-do items should persist across reloads.
+### `npm run eject`
 
-### **Step 3: Discuss Data Persistence and `localStorage`**
-- **Data Persistence:** By storing data in `localStorage`, the to-do list is now persistent across page reloads. This is a simple and effective way to add persistence to client-side applications.
-- **Limitations of `localStorage`:** 
-  - Storage size is limited (usually around 5MB per domain).
-  - Data is stored as strings, requiring serialization (e.g., `JSON.stringify`) and deserialization (e.g., `JSON.parse`).
-  - Data is stored locally in the browser, so it’s not accessible from other devices or sessions.
+**Note: this is a one-way operation. Once you `eject`, you can't go back!**
 
-### **Final Notes for This Lesson:**
-- **Understanding Effects:** This lesson demonstrates how to use the `useEffect` hook to run side effects (saving data to `localStorage`) in response to changes in state.
-- **Next Step:** In future lessons, we can explore more robust data persistence methods, such as using a backend API with a database.
+If you aren't satisfied with the build tool and configuration choices, you can `eject` at any time. This command will remove the single build dependency from your project.
 
-### **Try It Out:**
-- Add a few to-do items and then refresh the page to see if they persist.
-- Remove or mark some items as completed, then refresh the page again to check if the state is retained.
+Instead, it will copy all the configuration files and the transitive dependencies (webpack, Babel, ESLint, etc) right into your project so you have full control over them. All of the commands except `eject` will still work, but they will point to the copied scripts so you can tweak them. At this point you're on your own.
 
-### **Links for Further Reading:**
-- [Using the Effect Hook (`useEffect`)](https://reactjs.org/docs/hooks-effect.html)
-- [Window.localStorage](https://developer.mozilla.org/en-US/docs/Web/API/Window/localStorage)
+You don't have to ever use `eject`. The curated feature set is suitable for small and middle deployments, and you shouldn't feel obligated to use this feature. However we understand that this tool wouldn't be useful if you couldn't customize it when you are ready for it.
 
-### **Ready for Automation?**
-If you’d like, I can write a script to automate these changes in the next step! Let me know if you're ready for the script.
+## Learn More
+
+You can learn more in the [Create React App documentation](https://facebook.github.io/create-react-app/docs/getting-started).
+
+To learn React, check out the [React documentation](https://reactjs.org/).
+
+### Code Splitting
+
+This section has moved here: [https://facebook.github.io/create-react-app/docs/code-splitting](https://facebook.github.io/create-react-app/docs/code-splitting)
+
+### Analyzing the Bundle Size
+
+This section has moved here: [https://facebook.github.io/create-react-app/docs/analyzing-the-bundle-size](https://facebook.github.io/create-react-app/docs/analyzing-the-bundle-size)
+
+### Making a Progressive Web App
+
+This section has moved here: [https://facebook.github.io/create-react-app/docs/making-a-progressive-web-app](https://facebook.github.io/create-react-app/docs/making-a-progressive-web-app)
+
+### Advanced Configuration
+
+This section has moved here: [https://facebook.github.io/create-react-app/docs/advanced-configuration](https://facebook.github.io/create-react-app/docs/advanced-configuration)
+
+### Deployment
+
+This section has moved here: [https://facebook.github.io/create-react-app/docs/deployment](https://facebook.github.io/create-react-app/docs/deployment)
+
+### `npm run build` fails to minify
+
+This section has moved here: [https://facebook.github.io/create-react-app/docs/troubleshooting#npm-run-build-fails-to-minify](https://facebook.github.io/create-react-app/docs/troubleshooting#npm-run-build-fails-to-minify)

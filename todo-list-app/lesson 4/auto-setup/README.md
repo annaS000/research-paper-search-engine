@@ -1,10 +1,9 @@
 ## **How to Use the Script:**
-1. Save the script as `setup-addtodo.sh` in the `lesson 4/auto-setup/` directory.
-2. Make the script executable:
+1. Make the script executable:
    ```bash
    chmod +x setup-addtodo.sh
    ```
-3. Run the script:
+2. Run the script:
    ```bash
    ./setup-addtodo.sh
    ```

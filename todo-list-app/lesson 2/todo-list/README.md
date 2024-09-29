@@ -1,113 +1,70 @@
-### **Lesson 2: Creating the Main Page Component (`HomePage.js`)**
+# Getting Started with Create React App
 
-In this updated lesson, we’ll modify the `HomePage.js` component to include simple placeholders for adding a to-do item and displaying the to-do list. This will ensure the functions `addTodo` and `toggleTodo` are used, avoiding any ESLint warnings. We will also discuss how these placeholders will be replaced with more comprehensive components in future lessons.
+This project was bootstrapped with [Create React App](https://github.com/facebook/create-react-app).
 
-### **Objectives of This Lesson:**
-- Create a `HomePage.js` component in the `pages/` folder.
-- Implement state management using React's `useState` hook.
-- Set up the `HomePage` component to include:
-  - A button to add a sample to-do item using the `addTodo` function.
-  - A list to display the to-do items and toggle their completion status using the `toggleTodo` function
+## Available Scripts
 
-### **Steps:**
+In the project directory, you can run:
 
-#### **Step 1: Create the `HomePage.js` Component**
-1. Navigate to the `src/pages/` folder.
-2. Create a new file named `HomePage.js`.
-3. Open `HomePage.js` and define the functional component:
-   ```javascript
-   import React, { useState } from 'react';
+### `npm start`
 
-   const HomePage = () => {
-     // State to hold the list of to-do items
-     const [todos, setTodos] = useState([]);
+Runs the app in the development mode.\
+Open [http://localhost:3000](http://localhost:3000) to view it in your browser.
 
-     // Function to add a new to-do item
-     const addTodo = (text) => {
-       const newTodo = { id: Date.now(), text: text, completed: false };
-       setTodos([...todos, newTodo]);
-     };
+The page will reload when you make changes.\
+You may also see any lint errors in the console.
 
-     // Function to toggle the completion status of a to-do item
-     const toggleTodo = (id) => {
-       const updatedTodos = todos.map((todo) =>
-         todo.id === id ? { ...todo, completed: !todo.completed } : todo
-       );
-       setTodos(updatedTodos);
-     };
+### `npm test`
 
-     return (
-       <div>
-         <h1>My To-Do List</h1>
-         {/* Placeholder for AddTodo component */}
-         <button onClick={() => addTodo('Sample To-Do')}>Add Sample To-Do</button>
-         
-         {/* Placeholder for TodoList component */}
-         <ul>
-           {todos.map((todo) => (
-             <li key={todo.id} onClick={() => toggleTodo(todo.id)}>
-               {todo.text} {todo.completed ? '(Completed)' : ''}
-             </li>
-           ))}
-         </ul>
-       </div>
-     );
-   };
+Launches the test runner in the interactive watch mode.\
+See the section about [running tests](https://facebook.github.io/create-react-app/docs/running-tests) for more information.
 
-   export default HomePage;
-   ```
+### `npm run build`
 
-4. **Explanation of Code:**
-   - **State Management with `useState`:** 
-     - `const [todos, setTodos] = useState([]);` initializes the `todos` state as an empty array to hold the list of to-do items.
-   - **`addTodo` Function:** Creates a new to-do item and adds it to the `todos` array using `setTodos`.
-   - **`toggleTodo` Function:** Toggles the `completed` status of a to-do item by mapping over the `todos` array and updating the relevant item.
-   - **Using Placeholders:**
-     - A button (`<button>`) uses the `addTodo` function to add a sample to-do item to the list.
-     - An unordered list (`<ul>`) displays the list of to-do items, using the `toggleTodo` function to mark items as completed when clicked.
-   - **Why:** This setup ensures that both `addTodo` and `toggleTodo` are used to eliminate ESLint warnings
+Builds the app for production to the `build` folder.\
+It correctly bundles React in production mode and optimizes the build for the best performance.
 
-#### **Step 2: Render `HomePage` in `App.js`**
-1. Open `App.js` in the `src` folder.
-2. Modify it to import and render the `HomePage` component:
-   ```javascript
-   import React from 'react';
-   import HomePage from './pages/HomePage';
+The build is minified and the filenames include the hashes.\
+Your app is ready to be deployed!
 
-   const App = () => {
-     return (
-       <div className="App">
-         <HomePage />
-       </div>
-     );
-   };
+See the section about [deployment](https://facebook.github.io/create-react-app/docs/deployment) for more information.
 
-   export default App;
-   ```
+### `npm run eject`
 
-3. **Explanation of Code:** 
-   - Imports the `HomePage` component and renders it inside the main `App` component. When you run the app, you'll now see "My To-Do List," a button to add a sample to-do item, and a list of added to-do items.
+**Note: this is a one-way operation. Once you `eject`, you can't go back!**
 
-#### **Step 3: Discuss the Flow of Data and Props (Touch Lightly)**
-- **Current State:** The `HomePage` component currently manages the to-do list state using `useState`.
-- **Future State:** In upcoming lessons, we will refactor this to include separate components (`AddTodo` and `TodoList`). We will pass functions (`addTodo`, `toggleTodo`) and state (`todos`) as props to these components to handle interactions and updates to the to-do list.
-- **Why It's Important:** Understanding how to manage state and use it in various parts of the application is key to building interactive and maintainable React apps.
+If you aren't satisfied with the build tool and configuration choices, you can `eject` at any time. This command will remove the single build dependency from your project.
 
-### **Final Notes for This Lesson:**
-- **Understanding State:** This lesson demonstrates how to use `useState` to manage the list of to-do items and interact with them in the UI.
-- **Laying the Groundwork:** While we've used placeholders in this lesson, we will soon introduce dedicated components to handle adding and listing to-do items more elegantly.
-- **Next Step:** In the next lesson, we will create the `TodoList` component to organize the rendering logic for the list of to-do items.
+Instead, it will copy all the configuration files and the transitive dependencies (webpack, Babel, ESLint, etc) right into your project so you have full control over them. All of the commands except `eject` will still work, but they will point to the copied scripts so you can tweak them. At this point you're on your own.
 
-### **Try It Out:**
-- Save all changes and run the app using:
-  ```bash
-  npm start
-  ```
-- You should see:
-  - The title "My To-Do List."
-  - A button that adds a sample to-do when clicked.
-  - A list that displays added to-do items, which can be clicked to toggle their completion status.
+You don't have to ever use `eject`. The curated feature set is suitable for small and middle deployments, and you shouldn't feel obligated to use this feature. However we understand that this tool wouldn't be useful if you couldn't customize it when you are ready for it.
 
-### **Links for Further Reading:**
-- [React State and Lifecycle](https://reactjs.org/docs/state-and-lifecycle.html)
-- [React Hooks – `useState`](https://reactjs.org/docs/hooks-state.html)
+## Learn More
+
+You can learn more in the [Create React App documentation](https://facebook.github.io/create-react-app/docs/getting-started).
+
+To learn React, check out the [React documentation](https://reactjs.org/).
+
+### Code Splitting
+
+This section has moved here: [https://facebook.github.io/create-react-app/docs/code-splitting](https://facebook.github.io/create-react-app/docs/code-splitting)
+
+### Analyzing the Bundle Size
+
+This section has moved here: [https://facebook.github.io/create-react-app/docs/analyzing-the-bundle-size](https://facebook.github.io/create-react-app/docs/analyzing-the-bundle-size)
+
+### Making a Progressive Web App
+
+This section has moved here: [https://facebook.github.io/create-react-app/docs/making-a-progressive-web-app](https://facebook.github.io/create-react-app/docs/making-a-progressive-web-app)
+
+### Advanced Configuration
+
+This section has moved here: [https://facebook.github.io/create-react-app/docs/advanced-configuration](https://facebook.github.io/create-react-app/docs/advanced-configuration)
+
+### Deployment
+
+This section has moved here: [https://facebook.github.io/create-react-app/docs/deployment](https://facebook.github.io/create-react-app/docs/deployment)
+
+### `npm run build` fails to minify
+
+This section has moved here: [https://facebook.github.io/create-react-app/docs/troubleshooting#npm-run-build-fails-to-minify](https://facebook.github.io/create-react-app/docs/troubleshooting#npm-run-build-fails-to-minify)

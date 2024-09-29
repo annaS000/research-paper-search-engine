@@ -1,10 +1,9 @@
 ## **How to Use the Script**
-1. Copy the script and save it as `setup-homepage.sh`.
-2. Make the script executable:
+1. Make the script executable:
    ```bash
    chmod +x setup-homepage.sh
    ```
-3. Run the script:
+2. Run the script:
    ```bash
    ./setup-homepage.sh
    ```

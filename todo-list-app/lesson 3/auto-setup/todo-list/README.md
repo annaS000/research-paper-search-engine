@@ -1,117 +1,70 @@
-### **Lesson 3: Creating the `TodoList` Component**
+# Getting Started with Create React App
 
-In this lesson, we will create the `TodoList` component to handle the rendering of to-do items. This component will receive data from its parent (`HomePage`) through props, displaying the list of to-do items and allowing interactions like toggling their completion status. 
+This project was bootstrapped with [Create React App](https://github.com/facebook/create-react-app).
 
-By the end of this lesson, you’ll understand how to create reusable components that communicate with their parent using props and callback functions.
+## Available Scripts
 
-### **Objectives of This Lesson:**
-- Create a `TodoList` component inside the `components/` folder.
-- Render a list of to-do items passed as props from the `HomePage` component.
-- Pass the `toggleTodo` function from the `HomePage` to allow for toggling the completion status of each to-do item.
-- Refactor `HomePage.js` to use the `TodoList` component.
+In the project directory, you can run:
 
-### **Steps:**
+### `npm start`
 
-#### **Step 1: Create the `TodoList.js` Component**
-1. Navigate to the `src/components/` folder.
-2. Create a new file named `TodoList.js`.
-3. Open `TodoList.js` and define the component:
-   ```javascript
-   import React from 'react';
+Runs the app in the development mode.\
+Open [http://localhost:3000](http://localhost:3000) to view it in your browser.
 
-   const TodoList = ({ todos, toggleTodo }) => {
-     return (
-       <ul>
-         {todos.map((todo) => (
-           <li
-             key={todo.id}
-             onClick={() => toggleTodo(todo.id)}
-             style={{ textDecoration: todo.completed ? 'line-through' : 'none' }}
-           >
-             {todo.text}
-           </li>
-         ))}
-       </ul>
-     );
-   };
+The page will reload when you make changes.\
+You may also see any lint errors in the console.
 
-   export default TodoList;
-   ```
+### `npm test`
 
-4. **Explanation of Code:**
-   - **Props:** The `TodoList` component receives two props: `todos` (an array of to-do items) and `toggleTodo` (a function to toggle the completion status).
-   - **Rendering the List:** The `map()` function iterates over the `todos` array to render each to-do item as an `<li>` element. Each list item:
-     - Uses the `key` prop with the unique `todo.id` to help React identify each element.
-     - Calls `toggleTodo(todo.id)` when clicked, allowing the item’s completion status to be toggled.
-     - Applies a `style` that uses a strikethrough (`line-through`) if the to-do item is marked as completed.
+Launches the test runner in the interactive watch mode.\
+See the section about [running tests](https://facebook.github.io/create-react-app/docs/running-tests) for more information.
 
-#### **Step 2: Refactor `HomePage.js` to Use `TodoList`**
-1. Open `HomePage.js` in the `src/pages/` folder.
-2. Modify the component to import and use `TodoList`:
-   ```javascript
-   import React, { useState } from 'react';
-   import TodoList from '../components/TodoList';
+### `npm run build`
 
-   const HomePage = () => {
-     // State to hold the list of to-do items
-     const [todos, setTodos] = useState([]);
+Builds the app for production to the `build` folder.\
+It correctly bundles React in production mode and optimizes the build for the best performance.
 
-     // Function to add a new to-do item
-     const addTodo = (text) => {
-       const newTodo = { id: Date.now(), text: text, completed: false };
-       setTodos([...todos, newTodo]);
-     };
+The build is minified and the filenames include the hashes.\
+Your app is ready to be deployed!
 
-     // Function to toggle the completion status of a to-do item
-     const toggleTodo = (id) => {
-       const updatedTodos = todos.map((todo) =>
-         todo.id === id ? { ...todo, completed: !todo.completed } : todo
-       );
-       setTodos(updatedTodos);
-     };
+See the section about [deployment](https://facebook.github.io/create-react-app/docs/deployment) for more information.
 
-     return (
-       <div>
-         <h1>My To-Do List</h1>
-         {/* Placeholder for AddTodo component */}
-         <button onClick={() => addTodo('Sample To-Do')}>Add Sample To-Do</button>
-         
-         {/* Use the TodoList component */}
-         <TodoList todos={todos} toggleTodo={toggleTodo} />
-       </div>
-     );
-   };
+### `npm run eject`
 
-   export default HomePage;
-   ```
+**Note: this is a one-way operation. Once you `eject`, you can't go back!**
 
-3. **Explanation of Code:**
-   - **Importing `TodoList`:** The `HomePage` component imports `TodoList` to use it for displaying the list of to-do items.
-   - **Using Props:** Passes the `todos` array and `toggleTodo` function as props to `TodoList`. This enables the `TodoList` component to receive and render the list of to-do items and interact with the `toggleTodo` function to change their completion status.
+If you aren't satisfied with the build tool and configuration choices, you can `eject` at any time. This command will remove the single build dependency from your project.
 
-#### **Step 3: Test the App**
-- Save all changes and run the app using:
-  ```bash
-  npm start
-  ```
-- **Verify:** You should see:
-  - The title "My To-Do List."
-  - A button that adds a sample to-do when clicked.
-  - The to-do items listed, with the ability to toggle their completion status by clicking on them.
+Instead, it will copy all the configuration files and the transitive dependencies (webpack, Babel, ESLint, etc) right into your project so you have full control over them. All of the commands except `eject` will still work, but they will point to the copied scripts so you can tweak them. At this point you're on your own.
 
-#### **Step 4: Discuss the Flow of Data and Props**
-- **Data Flow:** The `HomePage` component manages the state (`todos` array) and passes it down to `TodoList` through props. It also passes the `toggleTodo` function to allow interaction with the to-do items.
-- **Inter-Component Communication:** This setup demonstrates how parent components can control the behavior of child components by passing data and functions via props.
+You don't have to ever use `eject`. The curated feature set is suitable for small and middle deployments, and you shouldn't feel obligated to use this feature. However we understand that this tool wouldn't be useful if you couldn't customize it when you are ready for it.
 
-### **Final Notes for This Lesson**
-- **Reusable Components:** The `TodoList` component is now a reusable piece of UI that can display any list of to-do items and handle interactions passed from its parent.
-- **Laying the Groundwork:** This setup is a foundation for building more complex interactions, such as adding new to-do items using a separate `AddTodo` component, which we'll handle in the next lesson.
-- **Next Step:** In the next lesson, we'll create the `AddTodo` component to provide a form for adding new to-do items to the list.
+## Learn More
 
-### **Try It Out:**
-- Click the "Add Sample To-Do" button and see the new item appear in the list.
-- Click on any to-do item to toggle its completion status.
+You can learn more in the [Create React App documentation](https://facebook.github.io/create-react-app/docs/getting-started).
 
-### **Links for Further Reading:**
-- [React – Passing Data Through Props](https://reactjs.org/docs/components-and-props.html)
-- [Lists and Keys in React](https://reactjs.org/docs/lists-and-keys.html)
+To learn React, check out the [React documentation](https://reactjs.org/).
+
+### Code Splitting
+
+This section has moved here: [https://facebook.github.io/create-react-app/docs/code-splitting](https://facebook.github.io/create-react-app/docs/code-splitting)
+
+### Analyzing the Bundle Size
+
+This section has moved here: [https://facebook.github.io/create-react-app/docs/analyzing-the-bundle-size](https://facebook.github.io/create-react-app/docs/analyzing-the-bundle-size)
+
+### Making a Progressive Web App
+
+This section has moved here: [https://facebook.github.io/create-react-app/docs/making-a-progressive-web-app](https://facebook.github.io/create-react-app/docs/making-a-progressive-web-app)
+
+### Advanced Configuration
+
+This section has moved here: [https://facebook.github.io/create-react-app/docs/advanced-configuration](https://facebook.github.io/create-react-app/docs/advanced-configuration)
+
+### Deployment
+
+This section has moved here: [https://facebook.github.io/create-react-app/docs/deployment](https://facebook.github.io/create-react-app/docs/deployment)
+
+### `npm run build` fails to minify
+
+This section has moved here: [https://facebook.github.io/create-react-app/docs/troubleshooting#npm-run-build-fails-to-minify](https://facebook.github.io/create-react-app/docs/troubleshooting#npm-run-build-fails-to-minify)

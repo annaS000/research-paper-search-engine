@@ -1,130 +1,70 @@
-### **Lesson 4: Creating the `AddTodo` Component**
+# Getting Started with Create React App
 
-In this lesson, we'll create the `AddTodo` component, which will contain an input field and a button to allow users to add new items to the to-do list. We will handle user input, utilize state management within the component, and pass the input data back to the parent component (`HomePage`) using a callback function.
+This project was bootstrapped with [Create React App](https://github.com/facebook/create-react-app).
 
-### **Objectives of This Lesson:**
-- Create the `AddTodo` component in the `components/` folder.
-- Implement state management within `AddTodo` to handle user input.
-- Pass the user input back to the `HomePage` component using a callback function.
-- Integrate the `AddTodo` component into `HomePage`.
+## Available Scripts
 
-### **Steps:**
+In the project directory, you can run:
 
-#### **Step 1: Create the `AddTodo.js` Component**
-1. Navigate to the `src/components/` folder.
-2. Create a new file named `AddTodo.js`.
-3. Open `AddTodo.js` and define the component:
-   ```javascript
-   import React, { useState } from 'react';
+### `npm start`
 
-   const AddTodo = ({ addTodo }) => {
-     const [inputValue, setInputValue] = useState('');
+Runs the app in the development mode.\
+Open [http://localhost:3000](http://localhost:3000) to view it in your browser.
 
-     // Handle input change
-     const handleChange = (e) => {
-       setInputValue(e.target.value);
-     };
+The page will reload when you make changes.\
+You may also see any lint errors in the console.
 
-     // Handle form submission
-     const handleSubmit = (e) => {
-       e.preventDefault();
-       if (inputValue.trim()) {
-         addTodo(inputValue);
-         setInputValue('');
-       }
-     };
+### `npm test`
 
-     return (
-       <form onSubmit={handleSubmit}>
-         <input
-           type="text"
-           value={inputValue}
-           onChange={handleChange}
-           placeholder="Add a new task"
-         />
-         <button type="submit">Add</button>
-       </form>
-     );
-   };
+Launches the test runner in the interactive watch mode.\
+See the section about [running tests](https://facebook.github.io/create-react-app/docs/running-tests) for more information.
 
-   export default AddTodo;
-   ```
+### `npm run build`
 
-4. **Explanation of Code:**
-   - **State Management:** Uses `useState` to track the input value.
-   - **`handleChange`:** Updates the `inputValue` state whenever the input field changes.
-   - **`handleSubmit`:** Prevents the default form submission, checks if the input is not empty, and then calls the `addTodo` function passed from the parent component (`HomePage`) to add a new item to the to-do list. It then resets the input field.
-   - **Form UI:** Renders a form with an input field for the to-do text and a button to submit the form.
+Builds the app for production to the `build` folder.\
+It correctly bundles React in production mode and optimizes the build for the best performance.
 
-#### **Step 2: Update `HomePage.js` to Use `AddTodo`**
-1. Open `HomePage.js` in the `src/pages/` folder.
-2. Modify the component to import and use the `AddTodo` component:
-   ```javascript
-   import React, { useState } from 'react';
-   import TodoList from '../components/TodoList';
-   import AddTodo from '../components/AddTodo';
+The build is minified and the filenames include the hashes.\
+Your app is ready to be deployed!
 
-   const HomePage = () => {
-     // State to hold the list of to-do items
-     const [todos, setTodos] = useState([]);
+See the section about [deployment](https://facebook.github.io/create-react-app/docs/deployment) for more information.
 
-     // Function to add a new to-do item
-     const addTodo = (text) => {
-       const newTodo = { id: Date.now(), text: text, completed: false };
-       setTodos([...todos, newTodo]);
-     };
+### `npm run eject`
 
-     // Function to toggle the completion status of a to-do item
-     const toggleTodo = (id) => {
-       const updatedTodos = todos.map((todo) =>
-         todo.id === id ? { ...todo, completed: !todo.completed } : todo
-       );
-       setTodos(updatedTodos);
-     };
+**Note: this is a one-way operation. Once you `eject`, you can't go back!**
 
-     return (
-       <div>
-         <h1>My To-Do List</h1>
-         
-         {/* Use the AddTodo component */}
-         <AddTodo addTodo={addTodo} />
+If you aren't satisfied with the build tool and configuration choices, you can `eject` at any time. This command will remove the single build dependency from your project.
 
-         {/* Use the TodoList component */}
-         <TodoList todos={todos} toggleTodo={toggleTodo} />
-       </div>
-     );
-   };
+Instead, it will copy all the configuration files and the transitive dependencies (webpack, Babel, ESLint, etc) right into your project so you have full control over them. All of the commands except `eject` will still work, but they will point to the copied scripts so you can tweak them. At this point you're on your own.
 
-   export default HomePage;
-   ```
+You don't have to ever use `eject`. The curated feature set is suitable for small and middle deployments, and you shouldn't feel obligated to use this feature. However we understand that this tool wouldn't be useful if you couldn't customize it when you are ready for it.
 
-3. **Explanation of Code:**
-   - **Importing `AddTodo`:** Imports the `AddTodo` component and includes it in the `HomePage` component's JSX.
-   - **Passing `addTodo` as a Prop:** Passes the `addTodo` function to the `AddTodo` component, allowing `AddTodo` to add new items to the to-do list when the user submits the form.
+## Learn More
 
-#### **Step 3: Test the App**
-- Save all changes and run the app using:
-  ```bash
-  npm start
-  ```
-- **Verify:** You should see:
-  - A text input and "Add" button for adding new to-do items.
-  - The to-do list updated with each new item added via the form.
-  - The ability to toggle completion status by clicking on a to-do item.
+You can learn more in the [Create React App documentation](https://facebook.github.io/create-react-app/docs/getting-started).
 
-### **Step 4: Discuss Data Flow and Component Communication**
-- **Data Flow:** The `AddTodo` component captures user input and sends it to the `HomePage` component through the `addTodo` function passed as a prop.
-- **Component Communication:** This illustrates how child components (`AddTodo`) can communicate with their parent (`HomePage`) using callback functions provided through props.
+To learn React, check out the [React documentation](https://reactjs.org/).
 
-### **Final Notes for This Lesson:**
-- **Understanding State:** This lesson reinforces the use of `useState` for managing form input within a component.
-- **Data Communication:** Demonstrates how to use callback functions to facilitate communication between child and parent components in React.
-- **Next Step:** Now that we have our basic "to-do list" functionality, future lessons can focus on refining the app (e.g., adding input validation, persisting data to a backend, or enhancing the UI).
+### Code Splitting
 
-### **Try It Out:**
-- Add new to-do items using the input field and observe how the to-do list updates.
-- Use the toggle feature in the list to mark items as completed.
+This section has moved here: [https://facebook.github.io/create-react-app/docs/code-splitting](https://facebook.github.io/create-react-app/docs/code-splitting)
 
-### **Links for Further Reading:**
-- [Handling Forms in React](https://reactjs.org/docs/forms.html)
-- [Lifting State Up](https://reactjs.org/docs/lifting-state-up.html)
+### Analyzing the Bundle Size
+
+This section has moved here: [https://facebook.github.io/create-react-app/docs/analyzing-the-bundle-size](https://facebook.github.io/create-react-app/docs/analyzing-the-bundle-size)
+
+### Making a Progressive Web App
+
+This section has moved here: [https://facebook.github.io/create-react-app/docs/making-a-progressive-web-app](https://facebook.github.io/create-react-app/docs/making-a-progressive-web-app)
+
+### Advanced Configuration
+
+This section has moved here: [https://facebook.github.io/create-react-app/docs/advanced-configuration](https://facebook.github.io/create-react-app/docs/advanced-configuration)
+
+### Deployment
+
+This section has moved here: [https://facebook.github.io/create-react-app/docs/deployment](https://facebook.github.io/create-react-app/docs/deployment)
+
+### `npm run build` fails to minify
+
+This section has moved here: [https://facebook.github.io/create-react-app/docs/troubleshooting#npm-run-build-fails-to-minify](https://facebook.github.io/create-react-app/docs/troubleshooting#npm-run-build-fails-to-minify)
