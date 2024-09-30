@@ -130,18 +130,105 @@ This structure provides a solid foundation for React development, following best
 ---
 
 #### **Step 2: Organizing the Project Folder**
-(Instructions for this step)
+To keep our code organized and make it easier to add features in the future, we'll set up a more structured folder layout.
+
+1. In the `src` directory, create the following folders:
+   - **`components/`**: For reusable UI components.
+   - **`pages/`**: For page components. We'll start with a `HomePage` component to contain the main to-do list logic.
+   - **`services/`**: For managing data operations, like fetching and updating data. We’ll set up a placeholder file for now.
+   - **`utils/`**: For utility functions such as input validation and sanitization.
+   - **`hooks/`**: For custom React hooks (we’ll explore these in future lessons).
+   - **`contexts/`**: For setting up context providers in future lessons (useful for global state management).
+   - **`styles/`**: For custom CSS styles.
+
+2. Your `src` folder structure should now look like this:
+   ```
+   src/
+   ├── components/
+   ├── hooks/
+   ├── pages/
+   ├── services/
+   ├── utils/
+   ├── contexts/
+   ├── styles/
+   ├── App.js
+   ├── index.js
+   ```
 
 #### **Step 3: Adding a `.env` File for Environment Variables**
-(Instructions for this step)
+Environment variables allow us to manage sensitive data like API URLs securely. Let’s set up a `.env` file that we'll use later when we integrate with an API.
+
+1. In the root directory (outside the `src` folder), create a file named `.env`.
+
+2. Add the following content to the `.env` file:
+   ```
+   REACT_APP_API_URL=http://localhost:3000
+   ```
+   - **Explanation:** React requires environment variables to start with `REACT_APP_`. This variable is a placeholder for where we might send our data (like to a local server or an API). We’ll explore this further in future lessons.
+   - **Security Note:** Environment variables help keep sensitive information out of the codebase. We use `.env` files for things like API keys, which we'll cover in later lessons.
+   
+3. Add `.env` to `.gitignore` to prevent it from being committed to the repository:
+   ```
+   # .gitignore
+   .env
+   ```
 
 #### **
 
 Step 4: Install ESLint and Prettier for Code Linting and Formatting**
-(Instructions for this step)
+To maintain code consistency and catch errors early, we’ll set up ESLint and Prettier.
+
+1. Run the following command to install ESLint and Prettier along with some necessary plugins:
+   ```bash
+   npm install eslint prettier eslint-plugin-react eslint-config-prettier eslint-plugin-prettier --save-dev
+   ```
+
+2. Create an ESLint configuration file:
+   - In the root directory, create a file named `.eslintrc.json` and add the following:
+     ```json
+     {
+       "env": {
+         "browser": true,
+         "es2021": true
+       },
+       "extends": [
+         "eslint:recommended",
+         "plugin:react/recommended",
+         "prettier"
+       ],
+       "parserOptions": {
+         "ecmaFeatures": {
+           "jsx": true
+         },
+         "ecmaVersion": 12,
+         "sourceType": "module"
+       },
+       "plugins": ["react"],
+       "rules": {
+        "react/prop-types": "off"
+       }
+     }
+     ```
+   - **Explanation:** This configuration sets up ESLint to work with React, using the recommended settings.
 
 #### **Step 5: Verify the Setup**
-(Instructions for this step)
+  - In the root directory, create a file named `.prettierrc` and add the following:
+     ```json
+     {
+       "singleQuote": true,
+       "trailingComma": "es5"
+     }
+     ```
+   - **Explanation:** This sets some formatting rules for your code. You can customize this based on your team's coding style.
+
+4. Add the following scripts to `package.json` to format and lint the code:
+   ```json
+   "scripts": {
+     "lint": "eslint 'src/**/*.{js,jsx}'",
+     "format": "prettier --write 'src/**/*.{js,jsx,json,css,md}'"
+   }
+   ```
+   - **Explanation:** This makes it easier to lint and format your code using npm commands.
 
 ---
 
